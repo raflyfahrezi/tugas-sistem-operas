@@ -18,12 +18,27 @@ self.addEventListener('DOMContentLoaded', () => {
         //add head to track
         let trackValue = Track.value.split(' ')
         trackValue.unshift(Head.value)
+
+        //disable input
+        Track.disabled = true
+        Head.disabled = true
         
         //calculate FIFO
         calculateFIFO(FIFO, [...trackValue])
 
         //calculate SSTF
         calculateSSTF(SSTF, [...Track.value.split(' ')], Head.value)
+
+        //calculate SCAN
+        calculateSCAN(SCAN, [...trackValue])
+
+        //calculate CSCAN
+        calculateCSCAN(CSCAN, [...trackValue])
+    })
+
+    //when button reset clicked
+    getElementById('reset').addEventListener('click', () => {
+        self.location.reload()
     })
 })
 
@@ -69,8 +84,6 @@ const calculateFIFO = (id, track) => {
 const calculateSSTF = (id, domSequence, domHead) => {
     arr = domSequence
     start = parseInt(domHead)
-
-    console.log(arr, start)
 
     if (arr.length === 0) {
         alert("sequence kosong!")
@@ -133,8 +146,72 @@ const calculateSSTF = (id, domSequence, domHead) => {
     }
 }
 
-const calculateSCAN = () => {
-    
+const calculateSCAN = (id, track) => {
+    let finalDataSet = track
+    let SCANTimeDeviation = {}
+    let averageSeekLength = 0 
+
+    const headDataSet = finalDataSet.shift()
+    const dataSetUpperHead = []
+    const dataSetBelowHead = []
+
+    for (let i = 0; i < finalDataSet.length; i++) {
+        if (parseInt(finalDataSet[i]) > parseInt(headDataSet)) {
+            dataSetUpperHead.push(finalDataSet[i])
+        } else {
+            dataSetBelowHead.push(finalDataSet[i])
+        }
+    }
+
+    AscendingSort(dataSetUpperHead)
+    DescendingSort(dataSetBelowHead)
+
+    finalDataSet = dataSetUpperHead.concat(dataSetBelowHead)
+
+    finalDataSet.unshift(headDataSet)
+
+    SCANTimeDeviation = timeDeviation(finalDataSet)
+
+    setChart(
+        id,
+        finalDataSet,
+        SCANTimeDeviation['timeDeviationString'],
+        'SCAN'
+    )
+}
+
+const calculateCSCAN = (id, track) => {
+    let finalDataSet = track
+    let CSCANTimeDeviation = {}
+    let averageSeekLength = 0
+
+    const headDataSet = finalDataSet.shift()
+    const dataSetBelowHead = []
+    const dataSetUpperHead = []
+
+    for (let i = 0; i < finalDataSet.length; i++) {
+        if (parseInt(finalDataSet[i]) > parseInt(headDataSet)) {
+            dataSetUpperHead.push(finalDataSet[i])
+        } else {
+            dataSetBelowHead.push(finalDataSet[i])
+        }
+    }
+
+    AscendingSort(dataSetUpperHead)
+    AscendingSort(dataSetBelowHead)
+
+    finalDataSet = dataSetUpperHead.concat(dataSetBelowHead)
+
+    finalDataSet.unshift(headDataSet)
+
+    CSCANTimeDeviation = timeDeviation(finalDataSet)
+
+    setChart(
+        id,
+        finalDataSet,
+        CSCANTimeDeviation['timeDeviationString'],
+        'CSCAN'
+    )
 }
 
 const timeDeviation = track => {
@@ -152,4 +229,16 @@ const timeDeviation = track => {
         'timeDeviationString' : timeDeviationString,
         'timeDeviationNumber' : timeDeviationNumber
     }
+}
+
+const AscendingSort = (array) => {
+    array.sort((a, b) => {
+        return a - b
+    })
+}
+
+const DescendingSort = (array) => {
+    array.sort((a, b) => {
+        return b - a
+    })
 }
