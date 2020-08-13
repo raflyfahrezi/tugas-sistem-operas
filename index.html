@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./assets/chartjs/Chart.js"></script>
+    <link rel="stylesheet" href="./assets/chartjs/Chart.css">
+    <link rel="stylesheet" href="./assets/style.css">
+    <title>Disk Schedulling Algorithm</title>
+</head>
+<body>
+    <header>
+        <p>Disk Schedulling Algorithm</p>
+    </header>
+    <div class="cardInput">
+        <div class="cardInput__content">
+            <label for="track">Track : </label>
+            <input type="text" name="track" id="track" placeholder="cth : 10 20 30 40 10">
+        </div>
+        <div class="cardInput__content">
+            <label for="head">Head : </label>
+            <input type="text" name="head" id="head" placeholder="cth : 100">
+        </div>
+        <div class="cardInput__content">
+            <button type="button" id="reset">Reset</button>
+            <button type="button" id="calc">Calculate</button>
+        </div>
+    </div>
+    <div class="container">
+        <canvas id="FIFO"></canvas>
+        <canvas id="SSTF"></canvas>
+        <canvas id="SCAN"></canvas>
+        <canvas id="CSCAN"></canvas>
+    </div>
+</body>
+<script src="./assets/script.js"></script>
+</html>
