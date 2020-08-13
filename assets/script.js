@@ -3,11 +3,25 @@ const getElementById = (id) => {
 }
 
 self.addEventListener('DOMContentLoaded', () => {
+    // input
+    const Track = getElementById('track')
+    const Head = getElementById('head')
+
+    // canvas
     const FIFO = getElementById('FIFO')
     const SSTF = getElementById('SSTF')
     const SCAN = getElementById('SCAN')
     const CSCAN = getElementById('CSCAN')
 
+    //when button calculate clicked
+    getElementById('calc').addEventListener('click', () => {
+        //add head to track
+        let trackValue = Track.value.split(' ')
+        trackValue.unshift(Head.value)
+        
+        //calculateFIFO
+        calculateFIFO(FIFO, [...trackValue])
+    })
 })
 
 const setChart = (id, track, time, title)  => {
@@ -16,9 +30,13 @@ const setChart = (id, track, time, title)  => {
         data: {
             labels: time,
             datasets: [{
-                label: 'of Votes',
+                label: 'Track ke ',
                 data: track,
-                borderWidth: 1
+                fill: true,
+                lineTension: 0.5,
+                backgroundColor: 'rgba(0,0,0,0.2)',
+                borderColor: 'rgba(0,0,0,1)',
+                borderWidth: 2,
             }]
         },
         options: {
@@ -34,6 +52,30 @@ const setChart = (id, track, time, title)  => {
     })
 }
 
-const FIFO = track => {
+const calculateFIFO = (id, track) => {
+    const FIFOTimeDeviation = timeDeviation(track)
 
+    setChart(
+        id,
+        track,
+        FIFOTimeDeviation['timeDeviationString'],
+        'FIFO'
+    )
+}
+
+const timeDeviation = track => {
+    const timeDeviationString = []
+    const timeDeviationNumber = []
+
+    for (let i = 0; i < track.length - 1; i++) {
+        timeDeviationString.push("+-" + Math.abs(track[i] - track[i+1]))
+        timeDeviationNumber.push(Math.abs(track[i] - track[i+1]))
+    }
+
+    timeDeviationString.unshift(' ')
+
+    return {
+        'timeDeviationString' : timeDeviationString,
+        'timeDeviationNumber' : timeDeviationNumber
+    }
 }
