@@ -42,7 +42,7 @@ self.addEventListener('DOMContentLoaded', () => {
     })
 })
 
-const setChart = (id, track, time, title)  => {
+const setChart = (id, track, time, title, average)  => {
     const myChart = new Chart(id, {
         type: 'line',
         data: {
@@ -60,7 +60,7 @@ const setChart = (id, track, time, title)  => {
         options: {
             title: {
                 display: true,
-                text: title,
+                text: title + ` (Avg Seek Time : ${average} )`,
                 fontSize: 20
             },
             legend: {
@@ -72,12 +72,14 @@ const setChart = (id, track, time, title)  => {
 
 const calculateFIFO = (id, track) => {
     const FIFOTimeDeviation = timeDeviation(track)
+    let FIFOAverageSeekLength = getSumOfNumberFromArray(FIFOTimeDeviation['timeDeviationNumber']) / FIFOTimeDeviation['timeDeviationNumber'].length
 
     setChart(
         id,
         track,
         FIFOTimeDeviation['timeDeviationString'],
-        'FIFO'
+        'FIFO',
+        FIFOAverageSeekLength.toFixed(1)
     )
 }
 
@@ -136,12 +138,14 @@ const calculateSSTF = (id, domSequence, domHead) => {
         seek_sequence[seek_sequence.length - 1] = start;
 
         const SSTFTimeDeviation = timeDeviation(seek_sequence)
+        let SSTFAverageSeekNumber = getSumOfNumberFromArray(SSTFTimeDeviation['timeDeviationNumber']) / SSTFTimeDeviation['timeDeviationNumber'].length
 
         setChart(
             id,
             seek_sequence,
             SSTFTimeDeviation['timeDeviationString'],
-            'SSTF'
+            'SSTF',
+            SSTFAverageSeekNumber.toFixed(1)
         )
     }
 }
@@ -171,12 +175,14 @@ const calculateSCAN = (id, track) => {
     finalDataSet.unshift(headDataSet)
 
     SCANTimeDeviation = timeDeviation(finalDataSet)
+    let SCANAverageSeekNumber = getSumOfNumberFromArray(SCANTimeDeviation['timeDeviationNumber']) / SCANTimeDeviation['timeDeviationNumber'].length
 
     setChart(
         id,
         finalDataSet,
         SCANTimeDeviation['timeDeviationString'],
-        'SCAN'
+        'SCAN',
+        SCANAverageSeekNumber.toFixed(1)
     )
 }
 
@@ -205,12 +211,14 @@ const calculateCSCAN = (id, track) => {
     finalDataSet.unshift(headDataSet)
 
     CSCANTimeDeviation = timeDeviation(finalDataSet)
+    let CSCANAverageSeekNumber = getSumOfNumberFromArray(CSCANTimeDeviation['timeDeviationNumber']) / CSCANTimeDeviation['timeDeviationNumber'].length
 
     setChart(
         id,
         finalDataSet,
         CSCANTimeDeviation['timeDeviationString'],
-        'CSCAN'
+        'CSCAN',
+        CSCANAverageSeekNumber.toFixed(1)
     )
 }
 
@@ -241,4 +249,12 @@ const DescendingSort = (array) => {
     array.sort((a, b) => {
         return b - a
     })
+}
+
+const getSumOfNumberFromArray = array => {
+    const newArray = array
+
+    return newArray.reduce((item, nextItem) => {
+        return parseInt(item) + parseInt(nextItem)
+    }, 0)
 }
