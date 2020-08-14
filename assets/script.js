@@ -15,8 +15,27 @@ self.addEventListener('DOMContentLoaded', () => {
 
     //when button calculate clicked
     getElementById('calc').addEventListener('click', () => {
+        let trackValueTemp = Track.value.split(' ')
+        let trackValue = []
+
+        if (isNaN(parseInt(Head.value))) {
+            alert('Head tidak valid')
+            return
+        }
+
+        //validasi
+        trackValueTemp.forEach((item, index) => {
+            if (!isNaN(parseInt(item))) {
+                trackValue.push(parseInt(item))
+            }
+        });
+
+        if (trackValue.length === 0) {
+            alert('Track tidak valid')
+            return
+        }
+
         //add head to track
-        let trackValue = Track.value.split(' ')
         trackValue.unshift(Head.value)
 
         //disable input
@@ -27,7 +46,7 @@ self.addEventListener('DOMContentLoaded', () => {
         calculateFIFO(FIFO, [...trackValue])
 
         //calculate SSTF
-        calculateSSTF(SSTF, [...Track.value.split(' ')], Head.value)
+        calculateSSTF(SSTF, [...trackValue], Head.value)
 
         //calculate SCAN
         calculateSCAN(SCAN, [...trackValue])
@@ -60,7 +79,7 @@ const setChart = (id, track, time, title, average)  => {
         options: {
             title: {
                 display: true,
-                text: title + ` (Avg Seek Time : ${average} )`,
+                text: title + ` (Avg Seek Length : ${average} )`,
                 fontSize: 20
             },
             legend: {
@@ -86,6 +105,8 @@ const calculateFIFO = (id, track) => {
 const calculateSSTF = (id, domSequence, domHead) => {
     arr = domSequence
     start = parseInt(domHead)
+
+    arr.shift()
 
     if (arr.length === 0) {
         alert("sequence kosong!")
